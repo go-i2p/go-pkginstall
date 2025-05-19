@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>go-i2p/go-pkginstall</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav-sidebar">
+    <div class="repo-info">
+      <h2>
+        <a href="index.html">go-i2p/go-pkginstall</a>
+      </h2>
+      <div class="repo-meta">
+        📝 16 commits
+         • 📜 MIT License
+      </div>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Repository Overview</a></li>
+      
+      
+        <div class="nav-section-title">Documentation:</div>
+        
+          <li><a href="docs/tree.html">Tree</a></li>
+        
+      
+    </ul>
+    
+    <div class="nav-footer">
+      <a href="https://github.com/go-i2p/go-pkginstall" target="_blank">View on GitHub</a>
+    </div>
+  </nav>
+  
+  <div class="main-content">
+    <header class="repo-header">
+      <h1>go-i2p/go-pkginstall</h1>
+      <div class="repo-description">WARNING: EXPERIMENTAL. I knocked this together based on my abuse of checkinstall and my experience with jpackage. It's very new, it's not been used...</div>
+      
+      <div class="repo-stats">
+        
+        <div class="repo-stat">
+          <span>📝</span> <span>16 commits</span>
+        </div>
+        
+        
+        <div class="repo-stat">
+          <span>📅</span> <span>Last updated: May 19, 2025</span>
+        </div>
+        
+        
+        <div class="repo-stat">
+          <span>📜</span> <span>MIT License</span>
+        </div>
+        
+      </div>
+    </header>
+    
+    <main>
+      
+      <section id="readme" class="repo-section">
+        <h2>README</h2>
+        <div class="readme-content">
+          <h1 id="go-pkginstall">go-pkginstall</h1>
+
+<p>WARNING: EXPERIMENTAL. I knocked this together based on my abuse of checkinstall and my experience with jpackage. It&rsquo;s very new, it&rsquo;s not been used in the real world very much. Be very careful using it. There&rsquo;s a good chance that some of this is a moving target too. All that said, so far it does what it says on the package. Pay attention and file issues if you have them.</p>
+
+<p>go-pkginstall is a command-line utility written in Go that serves as a slightly more secure replacement for Checkinstall, enabling developers to create Debian packages from source without requiring system-wide installation. This tool enhances security by redirecting operations targeting sensitive system directories to safer alternatives and implementing strict validation mechanisms. These should <strong>mostly</strong> account for the shortcomings of checkinstall <strong>that I understand and know about</strong>.</p>
+
+<p>I intend to use it to produce easy-to-install <code>.deb</code> packages of freestanding, statically-compiled Go applications.</p>
+
+<h2 id="features">Features</h2>
+
+<ul>
+<li><strong>Secure Path Management</strong>: Automatically redirects installation paths from system directories (e.g., <code>/etc</code>, <code>/var</code>, <code>/home</code>) to their secure equivalents under <code>/opt/</code>.</li>
+<li><strong>Symlink Management</strong>: Creates symlinks for essential files only when necessary, with strict collision detection to prevent overwriting existing files.</li>
+<li><strong>Checkinstall Compatibility</strong>: Fully compatible with Checkinstall command-line arguments up to the limits of the above^, allowing for seamless integration into most existing workflows.</li>
+<li><strong>Package Creation</strong>: Generates .deb packages without requiring root privileges, separating the package creation process from installation.</li>
+<li><strong>Validation Mechanisms</strong>: Provides warnings for potential issues related to Debian packaging standards and validates paths before package creation.</li>
+</ul>
+
+<h2 id="guidelines">Guidelines</h2>
+
+<ul>
+<li><strong>Keep it simple</strong>: The more complicated your package installation is, the less likely this tool is to work.</li>
+<li><strong>Know your dependencies</strong>: This tool does absolutely nothing to automatically generate lists of dependencies. You need to specify them in the arguments, or use entirely static applications.</li>
+<li><strong>Consider something else</strong>: This is intended either for A: Very simple packages or B: Local only packages. Creating a real Debian package is ultimately a better option.</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<p>To install go-pkginstall, clone the repository and build the application:</p>
+
+<pre><code class="language-bash">git clone https://github.com/go-i2p/go-pkginstall.git
+cd go-pkginstall
+go build ./cmd/pkginstall
+</code></pre>
+
+<h2 id="usage">Usage</h2>
+
+<p>After building the application, you can use it from the command line. The basic syntax is:</p>
+
+<pre><code class="language-bash">./pkginstall [options]
+</code></pre>
+
+<p>For a complete list of options and commands, run:</p>
+
+<pre><code class="language-bash">./pkginstall --help
+</code></pre>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.</p>
+
+<h2 id="license">License</h2>
+
+<p>This project is licensed under the MIT License. See the LICENSE file for more details.</p>
+
+        </div>
+      </section>
+      
+      
+      
+      <section id="contributors" class="repo-section">
+        <h2>Top Contributors</h2>
+        <div class="contributors-list">
+          
+          <div class="contributor-item">
+            <!-- Use first letter as avatar if no image available -->
+            <div class="contributor-avatar">
+              e
+            </div>
+            <div class="contributor-info">
+              <div class="contributor-name">
+                eyedeekay
+              </div>
+              <div class="contributor-commits">
+                16 commits
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <a href="https://github.com/go-i2p/go-pkginstall/graphs/contributors" target="_blank">View all contributors on GitHub →</a>
+      </section>
+      
+    </main>
+    
+    <footer class="page-footer">
+      <p>Generated on 2025-05-19 22:29:37 • <a href="https://github.com/go-i2p/go-pkginstall" target="_blank">View on GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>
