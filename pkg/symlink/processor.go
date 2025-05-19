@@ -93,9 +93,19 @@ func (p *SymlinkProcessor) QueueSymlink(request SymlinkRequest) error {
 // ProcessPath examines a path, determines if it needs a symlink, and queues it if necessary
 func (p *SymlinkProcessor) ProcessPath(originalPath string, transformedPath string) error {
 	// Check if the path needs a symlink
-	transformedPath, needsSymlink, err := p.pathMapper.TransformPath(originalPath)
-	if err != nil {
-		return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
+	needsSymlink := false
+	if transformedPath == "" {
+		var err error
+		transformedPath, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
+		if err != nil {
+			return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
+		}
+	} else {
+		var err error
+		_, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
+		if err != nil {
+			return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
+		}
 	}
 
 	if needsSymlink {
