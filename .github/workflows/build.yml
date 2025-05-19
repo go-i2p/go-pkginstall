@@ -29,9 +29,9 @@ jobs:
         id: get_version
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
+            VERSION=$(echo ${GITHUB_REF#refs/tags/v} | tr -d 'v')
           else
-            VERSION=$(git rev-parse --short HEAD)
+            VERSION=0.0.1-$(git rev-parse --short HEAD)
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -55,7 +55,7 @@ jobs:
         run: |
           ./pkginstall build \
             --name go-pkginstall \
-            --version 0.0.1 \
+            --version ${{ steps.get_version.outputs.version }} \
             --maintainer "idk <idk@i2pmail.org>" \
             --description "A replacement for Checkinstall with mildly enhanced security features" \
             --source ./build \
