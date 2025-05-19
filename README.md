@@ -1,6 +1,8 @@
 # go-pkginstall
 
-go-pkginstall is a command-line utility written in Go that serves as a slightly more secure replacement for Checkinstall, enabling developers to create Debian packages from source without requiring system-wide installation. This tool enhances security by redirecting operations targeting sensitive system directories to safer alternatives and implementing strict validation mechanisms.
+WARNING: EXPERIMENTAL. I knocked this together based on my abuse of checkinstall and my experience with jpackage. It's very new, it's not been used in the real world very much. Be very careful using it. There's a good chance that some of this is a moving target too. All that said, so far it does what it says on the package. Pay attention and file issues if you have them.
+
+go-pkginstall is a command-line utility written in Go that serves as a slightly more secure replacement for Checkinstall, enabling developers to create Debian packages from source without requiring system-wide installation. This tool enhances security by redirecting operations targeting sensitive system directories to safer alternatives and implementing strict validation mechanisms. These should **mostly** account for the shortcomings of checkinstall **that I understand and know about**.
 
 I intend to use it to produce easy-to-install `.deb` packages of freestanding, statically-compiled Go applications.
 
@@ -48,4 +50,4 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.# go-pkginstall
+This project is licensed under the MIT License. See the LICENSE file for more details.
