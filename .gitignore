@@ -1,0 +1,8 @@
+*.tar*
+/control
+/data
+/pkginstall
+/debian-binary
+*.deb
+/opt
+/build
