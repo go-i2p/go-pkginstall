@@ -69,6 +69,17 @@ jobs:
 
       - name: Upload Debian package to release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          files: go-pkginstall_${{ steps.get_version.outputs.version }}.deb
+          artifacts: go-pkginstall_${{ steps.get_version.outputs.version }}.deb
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+
+      - name: Upload Debian package to nightly
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: go-pkginstall_${{ steps.get_version.outputs.version }}.deb
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          tag: nightly
+          replace: true
