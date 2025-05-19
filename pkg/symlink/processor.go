@@ -131,39 +131,57 @@ func (p *SymlinkProcessor) ProcessPath(originalPath string, transformedPath stri
 
 // ProcessQueuedSymlinks creates all queued symlinks
 func (p *SymlinkProcessor) ProcessQueuedSymlinks() error {
-	p.queueMutex.Lock()
-	defer p.queueMutex.Unlock()
+    p.queueMutex.Lock()
+    defer p.queueMutex.Unlock()
 
-	if len(p.symlinkQueue) == 0 {
-		if p.verbose {
-			p.logFunc("No symlinks to process\n")
-		}
-		return nil
-	}
+    if len(p.symlinkQueue) == 0 {
+        if p.verbose {
+            p.logFunc("No symlinks to process\n")
+        }
+        return nil
+    }
 
-	if p.verbose {
-		p.logFunc("Processing %d queued symlinks\n", len(p.symlinkQueue))
-	}
+    if p.verbose {
+        p.logFunc("Processing %d queued symlinks\n", len(p.symlinkQueue))
+    }
 
-	var errs []error
-	for _, request := range p.symlinkQueue {
-		if err := p.createSymlink(request); err != nil {
-			errs = append(errs, err)
-			if p.verbose {
-				p.logFunc("Error creating symlink %s -> %s: %v\n",
-					request.Source, request.Target, err)
-			}
-		}
-	}
+    var errs []error
+    var failedSymlinks []SymlinkRequest
+    var successCount int
 
-	// Clear the queue after processing
-	p.symlinkQueue = make([]SymlinkRequest, 0)
+    for _, request := range p.symlinkQueue {
+        if err := p.createSymlink(request); err != nil {
+            errs = append(errs, err)
+            failedSymlinks = append(failedSymlinks, request)
+            if p.verbose {
+                p.logFunc("Error creating symlink %s -> %s: %v\n",
+                    request.Source, request.Target, err)
+            }
+        } else {
+            successCount++
+        }
+    }
 
-	if len(errs) > 0 {
-		return fmt.Errorf("failed to create %d symlinks", len(errs))
-	}
+    // Keep failed symlinks in the queue for potential retry
+    if len(failedSymlinks) > 0 {
+        p.symlinkQueue = failedSymlinks
+        if p.verbose {
+            p.logFunc("Kept %d failed symlinks in queue for retry\n", len(failedSymlinks))
+        }
+    } else {
+        // Only clear the queue if all symlinks were created successfully
+        p.symlinkQueue = make([]SymlinkRequest, 0)
+    }
 
-	return nil
+    if p.verbose && successCount > 0 {
+        p.logFunc("Successfully created %d symlinks\n", successCount)
+    }
+
+    if len(errs) > 0 {
+        return fmt.Errorf("failed to create %d symlinks", len(errs))
+    }
+
+    return nil
 }
 
 // createSymlink creates a single symlink, ensuring parent directories exist
