@@ -92,96 +92,96 @@ func (p *SymlinkProcessor) QueueSymlink(request SymlinkRequest) error {
 
 // ProcessPath examines a path, determines if it needs a symlink, and queues it if necessary
 func (p *SymlinkProcessor) ProcessPath(originalPath string, transformedPath string) error {
-    needsSymlink := false
-    
-    // If transformed path is empty, we need to calculate it
-    if transformedPath == "" {
-        var err error
-        transformedPath, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
-        if err != nil {
-            return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
-        }
-    } else {
-        // When a transformed path is provided, we verify it and determine if symlink is needed
-        calculatedPath, calcNeedsSymlink, err := p.pathMapper.TransformPath(originalPath)
-        if err != nil {
-            return fmt.Errorf("failed to transform path %s for verification: %w", originalPath, err)
-        }
-        
-        // Verify the provided path matches the calculated one
-        if transformedPath != calculatedPath {
-            return fmt.Errorf("provided transformed path %s does not match security-calculated path %s", 
-                transformedPath, calculatedPath)
-        }
-        
-        // Use the verified symlink necessity
-        needsSymlink = calcNeedsSymlink
-    }
+	needsSymlink := false
 
-    // Only create a symlink if needed
-    if needsSymlink {
-        return p.QueueSymlink(SymlinkRequest{
-            Source:      transformedPath,
-            Target:      originalPath,
-            Description: "Secure symlink for " + originalPath + " to " + transformedPath,
-        })
-    }
-    return nil
+	// If transformed path is empty, we need to calculate it
+	if transformedPath == "" {
+		var err error
+		transformedPath, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
+		if err != nil {
+			return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
+		}
+	} else {
+		// When a transformed path is provided, we verify it and determine if symlink is needed
+		calculatedPath, calcNeedsSymlink, err := p.pathMapper.TransformPath(originalPath)
+		if err != nil {
+			return fmt.Errorf("failed to transform path %s for verification: %w", originalPath, err)
+		}
+
+		// Verify the provided path matches the calculated one
+		if transformedPath != calculatedPath {
+			return fmt.Errorf("provided transformed path %s does not match security-calculated path %s",
+				transformedPath, calculatedPath)
+		}
+
+		// Use the verified symlink necessity
+		needsSymlink = calcNeedsSymlink
+	}
+
+	// Only create a symlink if needed
+	if needsSymlink {
+		return p.QueueSymlink(SymlinkRequest{
+			Source:      transformedPath,
+			Target:      originalPath,
+			Description: "Secure symlink for " + originalPath + " to " + transformedPath,
+		})
+	}
+	return nil
 }
 
 // ProcessQueuedSymlinks creates all queued symlinks
 func (p *SymlinkProcessor) ProcessQueuedSymlinks() error {
-    p.queueMutex.Lock()
-    defer p.queueMutex.Unlock()
+	p.queueMutex.Lock()
+	defer p.queueMutex.Unlock()
 
-    if len(p.symlinkQueue) == 0 {
-        if p.verbose {
-            p.logFunc("No symlinks to process\n")
-        }
-        return nil
-    }
+	if len(p.symlinkQueue) == 0 {
+		if p.verbose {
+			p.logFunc("No symlinks to process\n")
+		}
+		return nil
+	}
 
-    if p.verbose {
-        p.logFunc("Processing %d queued symlinks\n", len(p.symlinkQueue))
-    }
+	if p.verbose {
+		p.logFunc("Processing %d queued symlinks\n", len(p.symlinkQueue))
+	}
 
-    var errs []error
-    var failedSymlinks []SymlinkRequest
-    var successCount int
+	var errs []error
+	var failedSymlinks []SymlinkRequest
+	var successCount int
 
-    for _, request := range p.symlinkQueue {
-        if err := p.createSymlink(request); err != nil {
-            errs = append(errs, err)
-            failedSymlinks = append(failedSymlinks, request)
-            if p.verbose {
-                p.logFunc("Error creating symlink %s -> %s: %v\n",
-                    request.Source, request.Target, err)
-            }
-        } else {
-            successCount++
-        }
-    }
+	for _, request := range p.symlinkQueue {
+		if err := p.createSymlink(request); err != nil {
+			errs = append(errs, err)
+			failedSymlinks = append(failedSymlinks, request)
+			if p.verbose {
+				p.logFunc("Error creating symlink %s -> %s: %v\n",
+					request.Source, request.Target, err)
+			}
+		} else {
+			successCount++
+		}
+	}
 
-    // Keep failed symlinks in the queue for potential retry
-    if len(failedSymlinks) > 0 {
-        p.symlinkQueue = failedSymlinks
-        if p.verbose {
-            p.logFunc("Kept %d failed symlinks in queue for retry\n", len(failedSymlinks))
-        }
-    } else {
-        // Only clear the queue if all symlinks were created successfully
-        p.symlinkQueue = make([]SymlinkRequest, 0)
-    }
+	// Keep failed symlinks in the queue for potential retry
+	if len(failedSymlinks) > 0 {
+		p.symlinkQueue = failedSymlinks
+		if p.verbose {
+			p.logFunc("Kept %d failed symlinks in queue for retry\n", len(failedSymlinks))
+		}
+	} else {
+		// Only clear the queue if all symlinks were created successfully
+		p.symlinkQueue = make([]SymlinkRequest, 0)
+	}
 
-    if p.verbose && successCount > 0 {
-        p.logFunc("Successfully created %d symlinks\n", successCount)
-    }
+	if p.verbose && successCount > 0 {
+		p.logFunc("Successfully created %d symlinks\n", successCount)
+	}
 
-    if len(errs) > 0 {
-        return fmt.Errorf("failed to create %d symlinks", len(errs))
-    }
+	if len(errs) > 0 {
+		return fmt.Errorf("failed to create %d symlinks", len(errs))
+	}
 
-    return nil
+	return nil
 }
 
 // createSymlink creates a single symlink, ensuring parent directories exist
