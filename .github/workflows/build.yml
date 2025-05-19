@@ -55,7 +55,7 @@ jobs:
         run: |
           ./pkginstall build \
             --name go-pkginstall \
-            --version ${{ steps.get_version.outputs.version }} \
+            --version 0.0.1 \
             --maintainer "idk <idk@i2pmail.org>" \
             --description "A replacement for Checkinstall with mildly enhanced security features" \
             --source ./build \
