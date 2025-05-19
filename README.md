@@ -1,14 +1,22 @@
 # go-pkginstall
 
-go-pkginstall is a command-line utility written in Go that serves as a secure replacement for Checkinstall, enabling developers to create Debian packages from source without requiring system-wide installation. This tool enhances security by redirecting operations targeting sensitive system directories to safer alternatives and implementing strict validation mechanisms.
+go-pkginstall is a command-line utility written in Go that serves as a slightly more secure replacement for Checkinstall, enabling developers to create Debian packages from source without requiring system-wide installation. This tool enhances security by redirecting operations targeting sensitive system directories to safer alternatives and implementing strict validation mechanisms.
+
+I intend to use it to produce easy-to-install `.deb` packages of freestanding, statically-compiled Go applications.
 
 ## Features
 
 - **Secure Path Management**: Automatically redirects installation paths from system directories (e.g., `/etc`, `/var`, `/home`) to their secure equivalents under `/opt/`.
 - **Symlink Management**: Creates symlinks for essential files only when necessary, with strict collision detection to prevent overwriting existing files.
-- **Checkinstall Compatibility**: Fully compatible with Checkinstall command-line arguments, allowing for seamless integration into existing workflows.
+- **Checkinstall Compatibility**: Fully compatible with Checkinstall command-line arguments up to the limits of the above^, allowing for seamless integration into most existing workflows.
 - **Package Creation**: Generates .deb packages without requiring root privileges, separating the package creation process from installation.
 - **Validation Mechanisms**: Provides warnings for potential issues related to Debian packaging standards and validates paths before package creation.
+
+## Guidelines
+
+- **Keep it simple**: The more complicated your package installation is, the less likely this tool is to work.
+- **Know your dependencies**: This tool does absolutely nothing to automatically generate lists of dependencies. You need to specify them in the arguments, or use entirely static applications.
+- **Consider something else**: This is intended either for A: Very simple packages or B: Local only packages. Creating a real Debian package is ultimately a better option.
 
 ## Installation
 

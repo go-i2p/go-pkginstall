@@ -415,7 +415,7 @@ func (b *Builder) Build() (string, error) {
 	outputPath := filepath.Join(b.OutputDir, outputFileName)
 
 	// Build the package using dpkg-deb
-	cmdArgs := []string{"--build", b.BuildDir, outputPath}
+	cmdArgs := []string{"--build", "--root-owner-group", b.BuildDir, outputPath}
 	if b.Verbose {
 		log.Printf("Running: dpkg-deb %s", strings.Join(cmdArgs, " "))
 	}

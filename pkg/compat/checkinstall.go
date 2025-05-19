@@ -161,7 +161,6 @@ Example:
 	// Add behavior flags
 	cmd.Flags().BoolVar(&flags.NoStrip, "stripso", false, "Strip shared libraries")
 	cmd.Flags().BoolVar(&flags.NoSign, "nosign", true, "Do not sign package")
-	cmd.Flags().BoolVarP(&flags.Reset, "reset", "R", false, "Reset all options to default")
 	cmd.Flags().BoolVarP(&flags.Interactive, "interactive", "i", true, "Interactive mode")
 	cmd.Flags().BoolVarP(&flags.ShowHelp, "help", "h", false, "Show help message")
 	cmd.Flags().BoolVar(&flags.ShowVersion, "version", false, "Show version information")

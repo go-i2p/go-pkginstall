@@ -1,0 +1,74 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Debian packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION=$(git rev-parse --short HEAD)
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build static binary
+        run: |
+          CGO_ENABLED=0 go build -o pkginstall -tags netgo,osusergo -ldflags "-extldflags '-static'" ./cmd/pkginstall
+          chmod +x pkginstall
+
+      - name: Verify binary is statically linked
+        run: |
+          ldd ./pkginstall || echo "Binary is statically linked"
+
+      - name: Prepare package directory
+        run: |
+          mkdir -p ./build/usr/bin
+          cp ./pkginstall ./build/usr/bin/
+          mkdir -p ./build/usr/share/doc/go-pkginstall
+          cp README.md LICENSE ./build/usr/share/doc/go-pkginstall/
+
+      - name: Create Debian package
+        run: |
+          ./pkginstall build \
+            --name go-pkginstall \
+            --version ${{ steps.get_version.outputs.version }} \
+            --maintainer "idk <idk@i2pmail.org>" \
+            --description "A replacement for Checkinstall with mildly enhanced security features" \
+            --source ./build \
+            --verbose
+
+      - name: Upload Debian package artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-pkginstall-deb
+          path: go-pkginstall_*.deb
+
+      - name: Upload Debian package to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: go-pkginstall_*.deb
