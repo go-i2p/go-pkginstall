@@ -122,7 +122,7 @@ func (p *SymlinkProcessor) ProcessPath(originalPath string, transformedPath stri
     if needsSymlink {
         return p.QueueSymlink(SymlinkRequest{
             Source:      transformedPath,
-            Target:      transformedPath,
+            Target:      originalPath,
             Description: "Secure symlink for " + originalPath + " to " + transformedPath,
         })
     }
