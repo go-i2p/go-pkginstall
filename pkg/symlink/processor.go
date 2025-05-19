@@ -92,31 +92,35 @@ func (p *SymlinkProcessor) QueueSymlink(request SymlinkRequest) error {
 
 // ProcessPath examines a path, determines if it needs a symlink, and queues it if necessary
 func (p *SymlinkProcessor) ProcessPath(originalPath string, transformedPath string) error {
-	// Check if the path needs a symlink
-	needsSymlink := false
-	if transformedPath == "" {
-		var err error
-		transformedPath, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
-		if err != nil {
-			return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
-		}
-	} else {
-		var err error
-		_, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
-		if err != nil {
-			return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
-		}
-	}
+    // Check if the path needs a symlink
+    needsSymlink := false
+    var calculatedPath string
+    var err error
+    
+    // Always calculate the correct transformed path
+    calculatedPath, needsSymlink, err = p.pathMapper.TransformPath(originalPath)
+    if err != nil {
+        return fmt.Errorf("failed to transform path %s: %w", originalPath, err)
+    }
+    
+    // If a transformed path was provided, validate it matches the calculated one
+    if transformedPath != "" && transformedPath != calculatedPath {
+        return fmt.Errorf("provided transformed path %s does not match security-calculated path %s", 
+            transformedPath, calculatedPath)
+    }
+    
+    // Use the calculated path for consistency
+    transformedPath = calculatedPath
 
-	if needsSymlink {
-		// Queue the symlink creation
-		return p.QueueSymlink(SymlinkRequest{
-			Source:      transformedPath,
-			Target:      originalPath,
-			Description: "Automatically detected during build",
-		})
-	}
-	return nil
+    if needsSymlink {
+        // Queue the symlink creation
+        return p.QueueSymlink(SymlinkRequest{
+            Source:      transformedPath,
+            Target:      originalPath,
+            Description: "Automatically detected during build",
+        })
+    }
+    return nil
 }
 
 // ProcessQueuedSymlinks creates all queued symlinks
