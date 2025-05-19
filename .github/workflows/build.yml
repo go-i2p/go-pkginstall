@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: go-pkginstall_${{ steps.get_version.outputs.version }}.deb
-          path: go-pkginstall_0.0.1_amd64.deb
+          path: go-pkginstall*.deb
           compression-level: 0
 
       - name: Upload Debian package to release
